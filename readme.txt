@@ -1,6 +1,6 @@
 === Custom Fields Spreadsheet ===
 Contributors: williambixler
-Tags: admin, tool, wordpress, meta, custom, value, field, quick, edit, view, mass, fast
+Tags: admin, tool, wordpress, meta, custom, value, field, quick, edit, view, mass, fast, management, reporting, search
 Requires at least: 3.6
 Tested up to: 4.2.1
 Stable tag: 1.0.0
@@ -28,5 +28,11 @@ A WordPress plugin which gives you all of your custom fields in a single, cust
 
 == Changelog ==
 
-= 1.0 =
+= 1.1.0 =
+* UI improvements
+* UX improvements
+* HandsonTable 0.15.0
+* Search by post title
+
+= 1.0.0 =
 * Plugin Created
