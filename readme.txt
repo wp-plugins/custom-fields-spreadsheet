@@ -3,7 +3,7 @@ Contributors: williambixler
 Tags: admin, tool, wordpress, meta, custom, value, field, quick, edit, view, mass, fast, management, reporting, search
 Requires at least: 3.6
 Tested up to: 4.2.1
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

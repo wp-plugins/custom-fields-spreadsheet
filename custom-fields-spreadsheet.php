@@ -7,7 +7,7 @@ Plugin URI: http://www.williambixler.com/product/custom-fields-spreadsheet/
 
 Description: A WordPress plugin which gives you all of your custom fields in a single, customizable spreadsheet view.
 
-Version: 1.0.0
+Version: 1.1.0
  
 Author: William Bixler
 
@@ -76,6 +76,7 @@ function custom_fields_init() {
 	$count = -1;
 	$status = 'Published';
 	$customType = 'Custom';
+	$search;
 	
 	//Get posted values and override defaults
 	if (isset($_POST['Parent'])) {
@@ -95,6 +96,9 @@ function custom_fields_init() {
 	if (isset($_POST['customFieldType'])) {
 		$customType = sanitize_text_field( $_POST['customFieldType']);
 	}
+	if (isset($_POST['search'])) {
+		$search = sanitize_text_field( $_POST['search']);
+	}
 	
 	//Set the get children args
 	$args = array(
@@ -107,8 +111,13 @@ function custom_fields_init() {
 		'orderby' => 'id'
 	);
 	
-	//Get children
-	$children_array = get_children( $args );
+	if (isset($search)) {
+		//Find page
+		$children_array = array(get_page_by_title($search));
+	} else {
+		//Get children
+		$children_array = get_children( $args );
+	}
 	
 	//Get keys
 	
@@ -151,33 +160,37 @@ function custom_fields_init() {
 			}
 		}
 		?>
-		<script>
+<script>
 			var childCheck = true;
 		</script>
-		<?
+<?
 	} else {
 		?>
-		<script>
+<script>
 			var childCheck = false;
 		</script>
-		<?
+<?
 	}
 	
 	?>
 
-<table>
-	<!-- Query request form -->
-	<form method="post">
-		<tr>
-			<td>Parent ID:</td>
-			<!-- Parent ID with current ID value filled and title displayed -->
-			<td><input type="number" name="Parent" value="<? echo $parent ?>">
-				<span id="parentNameLabel"><? echo get_the_title( $parent ) ?></span></td>
-		</tr>
-		<tr>
-			<td>Post Type:</td>
-			<td><select name="Type">
-					<?
+<table class="holdingTable">
+	<tr>
+		<td><!--Query request holding table --> 
+			<span class="tableTitle">Query</span>
+			<table>
+				<!-- Query request form -->
+				<form method="post">
+					<tr>
+						<td>Parent ID:</td>
+						<!-- Parent ID with current ID value filled and title displayed -->
+						<td><input type="number" name="Parent" value="<? echo $parent ?>">
+							<span id="parentNameLabel"><? echo get_the_title( $parent ) ?></span></td>
+					</tr>
+					<tr>
+						<td>Post Type:</td>
+						<td><select name="Type">
+								<?
 									//Populate select with all available options
 									$post_types = get_post_types();
 									//Add 'any' option
@@ -191,12 +204,12 @@ function custom_fields_init() {
 										}
 									}
 			?>
-				</select></td>
-		</tr>
-		<tr>
-			<td>Post Status:</td>
-			<td><select name="Status">
-					<?
+							</select></td>
+					</tr>
+					<tr>
+						<td>Post Status:</td>
+						<td><select name="Status">
+								<?
 									//Populate select with all available options
 									$post_statuses = get_post_statuses();\//Add 'any' option
 									array_unshift($post_statuses, 'any');
@@ -209,12 +222,12 @@ function custom_fields_init() {
 										}
 									}
 								?>
-				</select></td>
-		</tr>
-		<tr>
-			<td>Custom Field Type:</td>
-			<td><select name="customFieldType">
-					<?
+							</select></td>
+					</tr>
+					<tr>
+						<td>Custom Field Type:</td>
+						<td><select name="customFieldType">
+								<?
 									//Set field type options
 									$fieldTypes = array('Wordpress', 'Custom', 'Both');
 									
@@ -227,13 +240,57 @@ function custom_fields_init() {
 										}
 									}
 								?>
-				</select></td>
-		<tr>
-		<tr>
-			<td><input type="submit" value="Submit"></td>
-		</tr>
-	</form>
+							</select></td>
+					<tr>
+						<td><input type="submit" value="Submit"></td>
+					</tr>
+				</form>
+			</table></td>
+		<td><span class="tableTitle">Search</span>
+			<table>
+				<form method="post">
+					<tr>
+						<td>Post Title:</td>
+						<td><input type="text" name="search" value="<? echo $search ?>"></td>
+					</tr>
+					<tr>
+						<td>Custom Field Type:</td>
+						<td><select name="customFieldType">
+								<?
+									//Set field type options
+									$fieldTypes = array('Wordpress', 'Custom', 'Both');
+									
+									foreach ($fieldTypes as $fieldType) {
+										//Auto select the current option
+										if ($fieldType == $customType) {
+											echo '<option selected>'.$fieldType.'</option>';
+										} else {
+											echo '<option>'.$fieldType.'</option>';
+										}
+									}
+								?>
+							</select></td>
+					</tr>
+					<tr>
+						<td><input type="submit"></td>
+					</tr>
+				</form>
+			</table></td>
+		<td><span class="tableTitle">Go Pro</span>
+			<table>
+				<tr>
+					<td>
+						Need editing capabilities? <a href="<? echo admin_url() ?>admin.php?page=go-pro">Go pro</a> and gain access to the editable spreadsheet and various powerful actions!<br/><br/>
+						<form method="get" action="<? echo admin_url() ?>admin.php">
+							<input type="text" value="go-pro" style="display: none" name="page">
+							<input type="submit" value="Go Pro">
+						</form>
+					</td>
+				</tr>
+			</table></td>
+	</tr>
 </table>
+<br/>
 <br/>
 <?
 		
@@ -260,7 +317,7 @@ function custom_fields_init() {
 			array_push($data, $tempData);
 		}
 		?>
-	<script>
+<script>
 		//Transfer from php to javascript
 		colHeaders = <?php echo json_encode($data[0]); ?>;
 		<? array_splice($data, 0, 1); ?>;
